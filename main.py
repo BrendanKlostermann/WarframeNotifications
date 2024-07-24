@@ -30,7 +30,7 @@ client = discord.Client(intents=discord.Intents.default())
 
 @client.event
 async def on_ready():
-    # This for loop is to ensure the bot is setup correctly on the servers it is installed on.
+    # This for loop is to ensure the bot is setup correctly on the servers it is installed on. Only occurs on startup
     for guild in client.guilds:
         
         channels = guild.text_channels
@@ -64,6 +64,9 @@ async def on_ready():
                         await channel.set_permissions(role, read_messages=True, send_messages=True)
                 except discord.Forbidden:
                     print(f"Failed to create text channel, permission not allowed.")
+
+
+
 
 
     # This is the loop that will constantly run to collect data and send notifications of new alerts

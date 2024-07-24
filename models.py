@@ -24,6 +24,15 @@ class Alert:
     # Function for adding rewards to the Alert Data Object
     def AddReward(self, reward):
         self.rewards.append(reward)
+        
+class Arbitration:
+    def __init__(self,arbitration_id, activation_time, expiration_time, mission_node, mission_type, enemy_type):
+        self.arbitration_id = arbitration_id
+        self.activation_time = activation_time
+        self.expiration_time = expiration_time
+        self.mission_node = mission_node
+        self.mission_type = mission_type
+        self.enemy_type = enemy_type
 
 
 #################################################
