@@ -19,7 +19,7 @@ create table if not exists RewardLineItem(
 
 
 create table if not exists Arbitration(
-    id TEXT PRIMARY KEY,
+    arbitration_id TEXT PRIMARY KEY,
     activation_time DATETIME NOT NULL,
     expiration_time DATETIME NOT NULL,
     mission_type TEXT,

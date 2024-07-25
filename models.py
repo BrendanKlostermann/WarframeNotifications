@@ -88,7 +88,7 @@ async def CollectNewAlertData():
         raise e
 
 # This function collects the current active alert information store in the database based on
-# which alerts the current time is between the activation tima nd expiration time    
+# which alerts the current time is between the activation tima and expiration time    
 async def CollectSavedAlertData():
     savedAlerts = []
     current_time = datetime.now(timezone.utc).isoformat()
@@ -127,3 +127,37 @@ async def SaveNewAlertData(alerts):
     finally:
         await cur.close()
     return 
+
+async def CollectNewArbitrationData():
+    url = "https://api.warframestat.us/pc/arbitration/"
+    savedArbitrations = []
+    
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as response:
+                if response.status == 200:
+                    arbitation_data = response.json()
+                    arbitration_id = arbitation_data["id"]
+                    arbitration_activation = arbitation_data["activation"]
+                    arbitration_expiration = arbitation_data["expiry"]
+                    arbitration_mission_type = arbitation_data["type"]
+                    arbitration_mission_node = arbitation_data["node"]
+                    arbitration_enemy_type = arbitation_data["enemy"]
+                    
+                    collectedArbitration = Arbitration(arbitration_id, arbitration_activation, arbitration_expiration,arbitration_mission_node, arbitration_mission_type, arbitration_enemy_type)
+                    # Need to compare against collected data to ensure the collected arbitration is new
+                    # If arbitration is new, save to database and return the object to the calling method
+    
+    except aiohttp.ClientError as e:
+        raise e                
+
+async def CollectSavedArbitrationData():
+    savedArbitrations = []
+    current_time = datetime.now(timezone.utc).isoformat()
+    try:
+        statement = "SELECT arbitration_id FROM Arbitration WHERE ? BETWEEN activation_time AND expiration_time"
+        
+        async with aiosqlite.connect("alerts_db.db") as con:
+            async with con.execute(statement, (current_time,)) as cursor:
+                
+                #FINISH SQL EXECUTION STATEMENT
