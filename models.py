@@ -74,11 +74,11 @@ async def CollectNewAlertData():
                             alert.AddReward(reward)
                         
                         alerts.append(alert)  # Append the alert inside the loop
-                    savedAlerts = CollectSavedAlertData()
+                    savedAlerts = await CollectSavedAlertData()
                     for alert in alerts:
                         if alert.alert_id not in savedAlerts:
                             # Make announcement in discord here
-                            SaveNewAlertData(alert)
+                            await SaveNewAlertData(alert)
                             newAlerts.append(alert)
                     
                     return newAlerts
@@ -147,13 +147,13 @@ async def CollectNewArbitrationData():
                     arbitration_enemy_type = arbitation_data["enemy"]
                     arbitration = Arbitration(arbitration_id, arbitration_activation, arbitration_expiration, arbitration_mission_node, arbitration_mission_type, arbitration_enemy_type)
                     
-                    collectedArbitration = Arbitration(arbitration_id, arbitration_activation, arbitration_expiration,arbitration_mission_node, arbitration_mission_type, arbitration_enemy_type)
                     # Need to compare against collected data to ensure the collected arbitration is new
                     # If arbitration is new, save to database and return the object to the calling method
                     savedArbitrations = CollectSavedArbitrationData()
-                    if collectedArbitration.arbitration_id not in savedArbitrations:
+                    if arbitration.arbitration_id not in savedArbitrations:
                         # Make announcement in discord
                         # Save Arbitration data after message is sent
+                        print("Complete the collect new arbitration data function.")
                     
     
     except aiohttp.ClientError as e:
@@ -175,7 +175,9 @@ async def CollectSavedArbitrationData():
     finally:
         cursor.close()
         
-
+async def SaveNewArbitrationData(arbitration):
+    
+    return
 
 
 
