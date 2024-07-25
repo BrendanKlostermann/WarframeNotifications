@@ -77,6 +77,8 @@ async def CollectNewAlertData():
                     savedAlerts = CollectSavedAlertData()
                     for alert in alerts:
                         if alert.alert_id not in savedAlerts:
+                            # Make announcement in discord here
+                            SaveNewAlertData(alert)
                             newAlerts.append(alert)
                     
                     return newAlerts
@@ -143,10 +145,16 @@ async def CollectNewArbitrationData():
                     arbitration_mission_type = arbitation_data["type"]
                     arbitration_mission_node = arbitation_data["node"]
                     arbitration_enemy_type = arbitation_data["enemy"]
+                    arbitration = Arbitration(arbitration_id, arbitration_activation, arbitration_expiration, arbitration_mission_node, arbitration_mission_type, arbitration_enemy_type)
                     
                     collectedArbitration = Arbitration(arbitration_id, arbitration_activation, arbitration_expiration,arbitration_mission_node, arbitration_mission_type, arbitration_enemy_type)
                     # Need to compare against collected data to ensure the collected arbitration is new
                     # If arbitration is new, save to database and return the object to the calling method
+                    savedArbitrations = CollectSavedArbitrationData()
+                    if collectedArbitration.arbitration_id not in savedArbitrations:
+                        # Make announcement in discord
+                        # Save Arbitration data after message is sent
+                    
     
     except aiohttp.ClientError as e:
         raise e                
@@ -159,5 +167,15 @@ async def CollectSavedArbitrationData():
         
         async with aiosqlite.connect("alerts_db.db") as con:
             async with con.execute(statement, (current_time,)) as cursor:
-                
-                #FINISH SQL EXECUTION STATEMENT
+                async for row in cursor:
+                    savedArbitrations.append(row[0])
+        return savedArbitrations
+    except Exception as e:
+        raise e
+    finally:
+        cursor.close()
+        
+
+
+
+
