@@ -3,7 +3,6 @@
 
 #bot.py
 import os
-import aiohttp
 import asyncio
 
 import discord
@@ -30,6 +29,18 @@ client = discord.Client(intents=discord.Intents.default())
 
 @client.event
 async def on_ready():
+
+    #Call function for guild setup, this should be called everytime a new server adds this bot
+    setup_guilds()
+    
+    #start loop for data processing, this loop should continue without interruption
+    client.loop.create_task(data_processing())
+
+
+
+
+
+async def setup_guilds():
     # This for loop is to ensure the bot is setup correctly on the servers it is installed on. Only occurs on startup
     for guild in client.guilds:
         
@@ -46,7 +57,7 @@ async def on_ready():
                 category = await guild.create_category("Warframe Notifications")
                 print(f"Created category: {category.name} for server: {guild.name}")
             except discord.Forbidden:
-                print(f"Failed to create category: {category.name}. Bot lacks permissions.")
+                print(f"Failed to create category: {category.name}. Bot lacks permissions. {guild.name}")
 
         #List of channel names required
         channel_names = ["alerts","arbitrations","fissures","events"]
@@ -63,13 +74,13 @@ async def on_ready():
                         await channel.set_permissions(guild.default_role, read_messages=True)
                         await channel.set_permissions(role, read_messages=True, send_messages=True)
                 except discord.Forbidden:
-                    print(f"Failed to create text channel, permission not allowed.")
+                    print(f"Failed to create text channel, permission not allowed. {guild.name}" )
 
 
-
-
-
+async def data_processing():
     # This is the loop that will constantly run to collect data and send notifications of new alerts
+    print("Starting Processing loop")
+    
     while True:
         # Process Alert data
         try:
@@ -80,7 +91,6 @@ async def on_ready():
         # Process Arbitration Data
        
         # Process Fissure Data
-        
             
         # Wait one minute for next interation 
         await asyncio.sleep(60)
