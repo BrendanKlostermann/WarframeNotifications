@@ -9,7 +9,7 @@ create table if not exists Alerts(
 
 
 create table if not exists RewardLineItem(
-    id INTEGER PRIMARY KEY,
+    reward_id INTEGER PRIMARY KEY,
     alert_id TEXT NOT NULL,
     reward_type TEXT,
     reward_item TEXT,
@@ -17,3 +17,12 @@ create table if not exists RewardLineItem(
     FOREIGN KEY (alert_id) REFERENCES Alerts(alert_id)
 );
 
+
+create table if not exists Arbitration(
+    arbitration_id TEXT PRIMARY KEY,
+    activation_time DATETIME NOT NULL,
+    expiration_time DATETIME NOT NULL,
+    mission_type TEXT,
+    enemy_type TEXT,
+    node TEXT
+)

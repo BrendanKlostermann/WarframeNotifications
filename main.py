@@ -30,7 +30,7 @@ client = discord.Client(intents=discord.Intents.default())
 
 @client.event
 async def on_ready():
-    # This for loop is to ensure the bot is setup correctly on the servers it is installed on.
+    # This for loop is to ensure the bot is setup correctly on the servers it is installed on. Only occurs on startup
     for guild in client.guilds:
         
         channels = guild.text_channels
@@ -66,6 +66,9 @@ async def on_ready():
                     print(f"Failed to create text channel, permission not allowed.")
 
 
+
+
+
     # This is the loop that will constantly run to collect data and send notifications of new alerts
     while True:
         # Process Alert data
@@ -74,12 +77,8 @@ async def on_ready():
         except Exception as e:
             print(f"Error occured during fetching and processing alert data. {e}")
         
-        # Process Archon Hunt Data
-        try:
-            archonHunt = await models.CollectNewArchonData()
-        except Exception as e:
-            print(f"Error occured during fetching and procession alert data. {e}")
-
+        # Process Arbitration Data
+       
         # Process Fissure Data
         
             

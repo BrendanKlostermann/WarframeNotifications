@@ -24,6 +24,15 @@ class Alert:
     # Function for adding rewards to the Alert Data Object
     def AddReward(self, reward):
         self.rewards.append(reward)
+        
+class Arbitration:
+    def __init__(self,arbitration_id, activation_time, expiration_time, mission_node, mission_type, enemy_type):
+        self.arbitration_id = arbitration_id
+        self.activation_time = activation_time
+        self.expiration_time = expiration_time
+        self.mission_node = mission_node
+        self.mission_type = mission_type
+        self.enemy_type = enemy_type
 
 
 #################################################
@@ -68,6 +77,8 @@ async def CollectNewAlertData():
                     savedAlerts = await CollectSavedAlertData()
                     for alert in alerts:
                         if alert.alert_id not in savedAlerts:
+                            # Make announcement in discord here
+                            await SaveNewAlertData(alert)
                             newAlerts.append(alert)
                     
                     return newAlerts
@@ -79,7 +90,7 @@ async def CollectNewAlertData():
         raise e
 
 # This function collects the current active alert information store in the database based on
-# which alerts the current time is between the activation tima nd expiration time    
+# which alerts the current time is between the activation tima and expiration time    
 async def CollectSavedAlertData():
     savedAlerts = []
     current_time = datetime.now(timezone.utc).isoformat()
@@ -119,18 +130,54 @@ async def SaveNewAlertData(alerts):
         await cur.close()
     return 
 
-async def CollectNewArchonData():
-    url = "https://api.warframestat.us/pc/archonHunt"
-    archonHunt = []
-    newArchonHunt = []
+async def CollectNewArbitrationData():
+    url = "https://api.warframestat.us/pc/arbitration/"
+    savedArbitrations = []
+    
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as response:
+                if response.status == 200:
+                    arbitation_data = response.json()
+                    arbitration_id = arbitation_data["id"]
+                    arbitration_activation = arbitation_data["activation"]
+                    arbitration_expiration = arbitation_data["expiry"]
+                    arbitration_mission_type = arbitation_data["type"]
+                    arbitration_mission_node = arbitation_data["node"]
+                    arbitration_enemy_type = arbitation_data["enemy"]
+                    arbitration = Arbitration(arbitration_id, arbitration_activation, arbitration_expiration, arbitration_mission_node, arbitration_mission_type, arbitration_enemy_type)
+                    
+                    # Need to compare against collected data to ensure the collected arbitration is new
+                    # If arbitration is new, save to database and return the object to the calling method
+                    savedArbitrations = CollectSavedArbitrationData()
+                    if arbitration.arbitration_id not in savedArbitrations:
+                        # Make announcement in discord
+                        # Save Arbitration data after message is sent
+                        print("Complete the collect new arbitration data function.")
+                    
+    
+    except aiohttp.ClientError as e:
+        raise e                
 
-
-    return
-
-async def CollectSavedArchonData():
-
-    return
-
-async def SaveNewArchonData(archonHunt):
+async def CollectSavedArbitrationData():
+    savedArbitrations = []
+    current_time = datetime.now(timezone.utc).isoformat()
+    try:
+        statement = "SELECT arbitration_id FROM Arbitration WHERE ? BETWEEN activation_time AND expiration_time"
+        
+        async with aiosqlite.connect("alerts_db.db") as con:
+            async with con.execute(statement, (current_time,)) as cursor:
+                async for row in cursor:
+                    savedArbitrations.append(row[0])
+        return savedArbitrations
+    except Exception as e:
+        raise e
+    finally:
+        cursor.close()
+        
+async def SaveNewArbitrationData(arbitration):
     
     return
+
+
+
