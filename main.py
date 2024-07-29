@@ -72,10 +72,14 @@ async def on_ready():
         try:
             alerts = await models.CollectNewAlertData()                
         except Exception as e:
-            print(f"Error occured durring fetching and processing alert data. {e}")
+            print(f"Error occured during fetching and processing alert data. {e}")
         
-        # Process Arbitration Data
-        
+        # Process Archon Hunt Data
+        try:
+            archonHunt = await models.CollectNewArchonData()
+        except Exception as e:
+            print(f"Error occured during fetching and procession alert data. {e}")
+
         # Process Fissure Data
         
             

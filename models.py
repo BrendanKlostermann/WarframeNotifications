@@ -65,7 +65,7 @@ async def CollectNewAlertData():
                             alert.AddReward(reward)
                         
                         alerts.append(alert)  # Append the alert inside the loop
-                    savedAlerts = CollectSavedAlertData()
+                    savedAlerts = await CollectSavedAlertData()
                     for alert in alerts:
                         if alert.alert_id not in savedAlerts:
                             newAlerts.append(alert)
@@ -118,3 +118,19 @@ async def SaveNewAlertData(alerts):
     finally:
         await cur.close()
     return 
+
+async def CollectNewArchonData():
+    url = "https://api.warframestat.us/pc/archonHunt"
+    archonHunt = []
+    newArchonHunt = []
+
+
+    return
+
+async def CollectSavedArchonData():
+
+    return
+
+async def SaveNewArchonData(archonHunt):
+    
+    return
