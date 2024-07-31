@@ -97,16 +97,20 @@ async def CollectSavedAlertData():
     try:
         statement = "SELECT alert_id FROM Alerts WHERE ? BETWEEN activation_time AND expiration_time"
 
-        async with aiosqlite.connect("alerts_db.db") as con:
+        async with aiosqlite.connect("alerts_db.sqlite") as con:
             async with con.execute(statement, (current_time,)) as cursor:
-                async for row in cursor:
-                    savedAlerts.append(row[0])
+                rows = await cursor.fetchall()
+                if not rows:
+                    print("No rows found for Alerts")
+                    return
+                else:
+                    for row in rows:
+                        savedAlerts.append(row[0])
 
         return savedAlerts
     except Exception as e:
+        print("Error occured in CollectSavedAlertData")
         raise e
-    finally: 
-        cursor.close()
 
 
 # This function saves new alert data to the database
@@ -115,7 +119,7 @@ async def SaveNewAlertData(alerts):
     reward_statement = "INSERT INTO Rewards (alert_id, reward_type, reward_item, reward_count) VALUES (?, ?, ?, ?)"
     
     try:
-        async with aiosqlite.connect("alerts_db.db") as con:
+        async with aiosqlite.connect("alerts_db.sqlite") as con:
             cur = await con.cursor()
             for alert in alerts:
                 cur.execute(alert_statement,(alert.alert_id, alert.activation_time, alert.expiration_time, alert.mission_node, alert.mission_type, alert.mission_faction))
@@ -125,9 +129,8 @@ async def SaveNewAlertData(alerts):
                     cur.execute(reward_statement,(alert_id, reward.reward_type, reward.reward_item, reward.reward_count))
             await con.commit()
     except Exception as e:
+        print("An error occured in SaveNewAlertData")
         raise e
-    finally:
-        await cur.close()
     return 
 
 async def CollectNewArbitrationData():
@@ -153,10 +156,11 @@ async def CollectNewArbitrationData():
                     if arbitration.arbitration_id not in savedArbitrations:
                         # Make announcement in discord
                         # Save Arbitration data after message is sent
-                        print("Complete the collect new arbitration data function.")
+                        print("Completed the collect new arbitration data function.")
                     
     
     except aiohttp.ClientError as e:
+        print("An error occurred in CollectNewArbitrationData")
         raise e                
 
 async def CollectSavedArbitrationData():
@@ -165,15 +169,18 @@ async def CollectSavedArbitrationData():
     try:
         statement = "SELECT arbitration_id FROM Arbitration WHERE ? BETWEEN activation_time AND expiration_time"
         
-        async with aiosqlite.connect("alerts_db.db") as con:
+        async with aiosqlite.connect("alerts_db.sqlite") as con:
             async with con.execute(statement, (current_time,)) as cursor:
-                async for row in cursor:
-                    savedArbitrations.append(row[0])
+                rows = await cursor.fetchall()
+                if not rows:
+                    print("No rows found for Arbitrations")
+                else:    
+                    for row in rows:
+                        savedArbitrations.append(row[0])
         return savedArbitrations
     except Exception as e:
+        print("Error in CollectSavedArbitrations")
         raise e
-    finally:
-        cursor.close()
         
 async def SaveNewArbitrationData(arbitration):
     

@@ -43,7 +43,7 @@ async def on_ready():
 async def setup_guilds():
     # This for loop is to ensure the bot is setup correctly on the servers it is installed on. Only occurs on startup
     for guild in client.guilds:
-        
+        print("Starting Guild Process")
         channels = guild.text_channels
         print(
             f'{client.user} has connected for the following guild:\n'
